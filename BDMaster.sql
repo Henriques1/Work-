@@ -300,7 +300,7 @@ create table Categoria (
 
 create table subcategoria (
   id int not null auto_increment,
-  idCategoria int(11) Default null,
+  idCategoria INT null,
   designacao nvarchar(50)default null,
   primary key(id),
 
@@ -311,19 +311,22 @@ create table subcategoria (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table marca (
-  id nvarchar(50)not null,
+  id int not null auto_increment,
+  codigo nvarchar(11) default null,
   designacao nvarchar(50)default null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table modelo (
   id nvarchar(50)not null,
+  idMarca INT NULL , 
   designacao nvarchar(50)default null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table unidade (
-  id nvarchar(50)not null ,
+  id int not null auto_increment,
+  codigo nvarchar(11) default null,
   designacao nvarchar(50)default null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
