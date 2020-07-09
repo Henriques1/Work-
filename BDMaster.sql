@@ -291,7 +291,7 @@ create table familiaProduto(
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table Categoria (
+create table categoria (
   id int not null auto_increment,
   codigo nvarchar(11) default null,
   designacao nvarchar(50)default null,
