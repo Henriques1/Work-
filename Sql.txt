@@ -1,0 +1,127 @@
+#
+#
+DROP DATABASE IF EXISTS BD;
+CREATE DATABASE BD
+Default character set utf8
+Default collate utf8_general_ci; 
+USE BD;
+#
+#
+CREATE TABLE usuario(
+   Codigo varchar(22) NOT NULL DEFAULT '0',
+   Nome varchar(50) DEFAULT NULL,
+   Perfil varchar(50) DEFAULT NULL,
+   Senha varchar(255) DEFAULT NULL,
+   Situacao varchar(10) DEFAULT NULL,
+   DescriFoto longtext,
+   Foto longblob,
+  PRIMARY KEY (Codigo)
+)ENGINE=InnoDB;
+INSERT INTO `usuario` VALUES ('0001','Master','Admim','123456','Activo','',NULL);
+#
+#
+CREATE TABLE EMPRESAS(
+    idEmp int NOT Null AUTO_INCREMENT,
+    codigoEmp varchar(50) NOT Null,
+    nomeEmp varchar(50)NOT Null,
+    perfilEmp varchar(50)NOT Null,
+    nif varchar(50)NOT Null,
+    endereEmp varchar(50)Not Null,
+    telefon varchar(50)Not Null,
+    celular varchar(50) Default Null,
+    emailEmp varchar(50) Default Null,
+    descriLogo longtext,
+    logoEmp longblob,
+    PRIMARY KEY(idEmp)
+)ENGINE=InnoDB;
+#
+#
+CREATE TABLE CONTAS(
+    idP INT default null, 
+    classe varchar(50) NOT NULL,
+    conta varchar(100) NOT NULL,
+    descricao varchar(100) DEFAULT NULL,
+    tipo varchar(50) Default NULL,
+    categoria varchar(50) Default NULL,
+    PRIMARY KEY(idP)
+    
+)ENGINE=InnoDB;
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('1','1','11','IMOBILIZAÇÕES CORPÓREAS ','I','Analítica');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('2','1','111','Terrenos e recursos naturais','I','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('3','1','1111','Terrenos em bruto','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('4','1','1112','Terrenos com arranjos','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('5','1','1113','Subsolos','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('6','1','1114','Terrenos com edifícios','I','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('7','1','11141','Relativos a edifícios industriais','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('8','1','11142','Relativos a edifícios administrativos e comerciais','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('9','1','11123','Relativos a outros edifícios','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('10','1','112','Edifícios e outras construções','I','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('11','1','1121','Edifícios','I','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('12','1','11211','Integrados em conjuntos industriais','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('13','1','11212','Integrados em conjuntos administrativos e comerciais','M','Sintética');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('14','1','11213','Outros conjuntos industriais','M','Sintética');;
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('15','1','11214','Implantados em propriedades alheia','','');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('16','1','1122','Outras construções','','');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('17','1','1123','Instalações','','');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('18','1','113','Equipamentos básico','','');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('19','1','1131','Material industrial','','');
+INSERT INTO CONTAS (idP,classe,conta,descricao,tipo,categoria) VALUES ('20','1','1132','Ferramentas industriais','','');
+#
+#
+CREATE TABLE DIARIOS(
+    diarioID int NOT NULL AUTO_INCREMENT,
+    diario varchar(50)NOT NULL,
+    descri varchar(50)NOT Null,
+    lancamento varchar(50)NOT NULL,
+    descriLanc varchar(50) NOT Null,
+    anoExercicio int DEFAULT NULL,
+    numerador int(50) DEFAULT NULL,
+    PRIMARY KEY(diarioID)    
+)ENGINE=InnoDB;
+#
+#
+CREATE TABLE TIPODOCS(
+    tipodocID int Not null AUTO_INCREMENT,
+    descriDoc varchar(50)Not null,
+    diario varchar(50)Not null,
+    balancFinn int default null,
+    PRIMARY KEY(tipodocID)
+)ENGINE=InnoDB; 
+#
+#
+CREATE TABLE DOCUMENTOS(
+    docID int NOT NULL AUTO_INCREMENT,
+    idEmp varchar(50) NOT Null,
+    tipodocID varchar(50) NOT NULL,
+    doc varchar(50)NOT NULL,
+    descriDoc varchar(50) NOT Null,
+    diarioID int NOT Null,
+    diario varchar(50) DEFAULT NULL,
+    descriDiario varchar(50) NOT NULL,
+    lancamento varchar(50)NOT NULL,
+    anoExercicio date DEFAULT NULL,
+    numerador int(50) DEFAULT NULL,
+    PRIMARY KEY(docID)
+)ENGINE=InnoDB;
+#
+#
+CREATE TABLE MOVIMENTOS(
+    movID int NOT NULL AUTO_INCREMENT,
+    idEmp varchar(50) NOT Null,
+    anoExercicio date Not Null,
+    dataMovimentacao date DEFAULT NULL,
+    diario varchar(50) DEFAULT NULL,
+    descriDiario varchar(50) DEFAULT Null,
+    #doc varchar(50) NOT NULL,
+    #descriDoc varchar(50) NOT null,
+    conta varchar(50)Not null,
+    descricao varchar(100) DEFAULT NULL,
+    movDebito decimal(12,2) DEFAULT NULL,
+    movCredito decimal(12,2) DEFAULT NULL,
+    saldoDebito decimal(12,2) DEFAULT NULL,
+    saldoCredito decimal(12,2) DEFAULT NULL,
+    diferenca decimal(12,2) Default null,
+    PRIMARY KEY(movID)
+)ENGINE=InnoDB;
+#
+#
