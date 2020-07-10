@@ -291,7 +291,7 @@ create table familiaProduto(
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table categoria (
+create table categoria(
   id int not null auto_increment,
   codigo nvarchar(11) default null,
   designacao nvarchar(50)default null,
@@ -305,7 +305,7 @@ create table subcategoria (
   primary key(id),
 
   INDEX fk_categoria_subcategoria_idx (idCategoria ASC),
-  CONSTRAINT fk_categoria_subcategoria FOREIGN KEY (idCategoria)REFERENCES Categoria (id)
+  CONSTRAINT fk_categoria_subcategoria FOREIGN KEY (idCategoria)REFERENCES categoria (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -318,8 +318,9 @@ create table marca (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table modelo (
-  id nvarchar(50)not null,
+  id int not null auto_increment,
   idMarca INT NULL , 
+  codigo nvarchar(11) Null,
   designacao nvarchar(50)default null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -342,8 +343,8 @@ create table taxa(
 create table produtos(
   id int not null auto_increment,
   codProduto nvarchar(30)default null,
-  idFamilia int (11)DEFAULT null,
-  idTaxa int(11)DEFAULT null,
+  idFamilia int null,
+  idTaxa int null,
   designacao nvarchar(50) not null,
   descricao nvarchar(50)default null,
   imageProduto longblob,
@@ -353,12 +354,12 @@ create table produtos(
   precoVenda decimal(10,2) default 0.00,
   precoVenda2 decimal(10,2) default 0.00,
   qtdade_stoke int default 1,
-  idFabricante int(11)default null,
+  idFabricante int null,
   qtdadeMinima int default 10,
-  idUnidade nvarchar(50) default null,
-  idCategoria varchar (11)default null,
-  idModelo nvarchar(50) default null,
-  idMarca nvarchar(11)default null,
+  idUnidade int null,
+  idCategoria int null,
+  idModelo int null,
+  idMarca int null,
   producao date,
   validade date,
   codBarras nvarchar(50) default null,
@@ -394,7 +395,7 @@ create table produtos(
   ON DELETE NO ACTION
   ON UPDATE CASCADE 
 
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 create table itensVendas(
