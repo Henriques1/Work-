@@ -159,7 +159,7 @@ create table vendedor(
 
 create table fornecedor (
   id int(11)not null auto_increment,
-  codigo nvarchar(11)default null,
+  codigo nvarchar(11) null,
   nome nvarchar(50)not null,
   idTipo int(11)default null,
   nif nvarchar(11)default null,
@@ -177,6 +177,7 @@ INDEX fk_fornecedor_tipo_idx (idTipo ASC),
 
 create table fabricante(
   id int not null auto_increment,
+  codigo nvarchar(11) null,
   designacao nvarchar(11)default null,
   nacionalidade nvarchar(50)default 'Angolana',
   descri nvarchar(100)default null,
@@ -301,6 +302,7 @@ create table categoria(
 create table subcategoria (
   id int not null auto_increment,
   idCategoria INT null,
+  codigo nvarchar(11) default null,
   designacao nvarchar(50)default null,
   primary key(id),
 
