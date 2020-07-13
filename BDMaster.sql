@@ -63,6 +63,15 @@ create table tipos(
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table nacionalidadeFabricante(
+  id int not null auto_increment,
+  designacao varchar(50) not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO nacionalidadeFabricante VALUES ("0","Nacional");
+INSERT INTO nacionalidadeFabricante VALUES ("0","Local");
+INSERT INTO nacionalidadeFabricante VALUES ("0","Estrangeiro");
+
 create table tipoPagamento(
   id int not null auto_increment,
   designacao nvarchar(256) not null,
@@ -179,9 +188,15 @@ create table fabricante(
   id int not null auto_increment,
   codigo nvarchar(11) null,
   designacao nvarchar(11)default null,
-  nacionalidade nvarchar(50)default 'Angolana',
+  idNacionalidade int(50)default 0,
   descri nvarchar(100)default null,
-  primary key(id) 
+  primary key(id),
+
+INDEX fk_fabricante_nacionalidade_idx (idNacionalidade ASC),
+  CONSTRAINT k_fabricante_nacionalidade FOREIGN KEY (idNacionalidade)REFERENCES nacionalidadeFabricante (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table endereco1(
