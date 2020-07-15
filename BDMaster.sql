@@ -339,7 +339,12 @@ create table modelo (
   idMarca INT NULL , 
   codigo nvarchar(11) Null,
   designacao nvarchar(50)default null,
-  primary key(id)
+  primary key(id),
+
+  INDEX fk_marca_modelo_idx (idMarca ASC),
+  CONSTRAINT fk_marca_modelo FOREIGN KEY (idMarca)REFERENCES marca (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table unidade (
