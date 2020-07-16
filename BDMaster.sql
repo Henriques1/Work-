@@ -62,6 +62,9 @@ create table tipos(
   designacao varchar(50) not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO tipos VALUES ("0","Entidades Física");
+INSERT INTO tipos VALUES ("0","Entidades Júridica");
+INSERT INTO tipos VALUES ("0","Entidade Anónimas");
 
 create table nacionalidadeFabricante(
   id int not null auto_increment,
@@ -99,10 +102,19 @@ CREATE TABLE departamento(
 
 create table cliente(
   id int(11) not null auto_increment, 
-  codigo varchar(11) default null, 
-  nome varchar(50) not null, 
-  idTipo int(50)default null,
-  niff varchar(11)not null, 
+  codigo varchar(11) not null, 
+  nome nvarchar(50) not null, 
+  idTipo int(50) null,
+  nif nvarchar(11)not null, 
+  morada nvarchar(11) null,
+  endereco nvarchar(11) null,
+  localidade nvarchar(11) null,
+  provincia nvarchar(11) null,
+  pais nvarchar(11) null,
+  telemovel nvarchar(11) null,
+  telefone nvarchar(11) null,
+  email nvarchar(11) null,
+  webpag nvarchar(11) null,
   descriFoto longtext,
   foto longblob,
   primary key(id),
@@ -168,19 +180,17 @@ create table vendedor(
 
 create table fornecedor (
   id int(11)not null auto_increment,
-  codigo nvarchar(11) null,
+  codigo nvarchar(11) not null,
   nome nvarchar(50)not null,
-  idTipo int(11)default null,
-  nif nvarchar(11)default null,
+  morada nvarchar(90) null,
+  nif nvarchar(50) null,
+  telemovel nvarchar(11) null,
+  telefone nvarchar(11) null,
+  email nvarchar(50) null,
   descriFoto longtext,
   foto longblob,
-  descri nvarchar(200)default null,
-  primary key(id),
-
-INDEX fk_fornecedor_tipo_idx (idTipo ASC),
-  CONSTRAINT fk_fornecedor_tipo FOREIGN KEY (idTipo)REFERENCES tipos (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE
+  descri nvarchar(200) null,
+  primary key(id)
 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
