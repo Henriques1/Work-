@@ -57,14 +57,24 @@ INSERT INTO tiposProduto VALUES ("0","commodities");
 INSERT INTO tiposProduto VALUES ("0","produtos intermediários");
 
 
-create table tipos(
+create table tipoEntidade(
   id int not null auto_increment,
   designacao varchar(50) not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO tipos VALUES ("0","Entidades Física");
-INSERT INTO tipos VALUES ("0","Entidades Júridica");
-INSERT INTO tipos VALUES ("0","Entidade Anónimas");
+INSERT INTO tipoEntidade VALUES ("0","Entidade Física");
+INSERT INTO tipoEntidade VALUES ("0","Entidade Júridica");
+INSERT INTO tipoEntidade VALUES ("0","Entidades Anónimas");
+
+create table tipoFuncionarios(
+  id int not null auto_increment,
+  designacao varchar(50) not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO tipoFuncionarios VALUES ("0","Efectivo");
+INSERT INTO tipoFuncionarios VALUES ("0","Colaborador");
+INSERT INTO tipoFuncionarios VALUES ("0","Dependente");
+INSERT INTO tipoFuncionarios VALUES ("0","Independente");
 
 create table nacionalidadeFabricante(
   id int not null auto_increment,
@@ -89,14 +99,14 @@ create table formaPagamento(
 
 CREATE TABLE categoriaFun(
   id int not null auto_increment,
-  designacao nvarchar(10) NOT NULL,
+  designacao nvarchar(100) NOT NULL,
   codigo nvarchar(50) DEFAULT NULL,
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE departamento(
-  id varchar(10) NOT NULL DEFAULT '',
-  Nome varchar(50) DEFAULT NULL,
+  id int not null auto_increment,
+  Nome varchar(100) DEFAULT NULL,
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -105,22 +115,22 @@ create table cliente(
   codigo varchar(11) not null, 
   nome nvarchar(50) not null, 
   idTipo int(50) null,
-  nif nvarchar(11)not null, 
-  morada nvarchar(11) null,
-  endereco nvarchar(11) null,
-  localidade nvarchar(11) null,
-  provincia nvarchar(11) null,
-  pais nvarchar(11) null,
-  telemovel nvarchar(11) null,
-  telefone nvarchar(11) null,
-  email nvarchar(11) null,
-  webpag nvarchar(11) null,
+  nif nvarchar(16)not null, 
+  morada nvarchar(100) null,
+  endereco nvarchar(100) null,
+  localidade nvarchar(100) null,
+  provincia nvarchar(100) null,
+  pais nvarchar(100) null,
+  telemovel nvarchar(100) null,
+  telefone nvarchar(15) null,
+  email nvarchar(50) null,
+  webpag nvarchar(50) null,
   descriFoto longtext,
   foto longblob,
   primary key(id),
 
-  INDEX fk_cliente_tipo_idx (idTipo ASC),
-  CONSTRAINT fk_cliente_tipo FOREIGN KEY (idTipo)REFERENCES tipos (id)
+  INDEX fk_cliente_tipoEntidade_idx (idTipo ASC),
+  CONSTRAINT fk_cliente_tipoEntidade FOREIGN KEY (idTipo)REFERENCES tipoEntidade (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
   #INDEX fk_cliente_endereco_idx (idEndereco ASC),
@@ -139,14 +149,14 @@ create table funcionario(
   foto longblob,
   idCategoriaFun int(11)default null,
   idSubCategoria int(11)default null,
-  idDepartamento varchar(11)default null,
+  idDepartamento  int(11)default null,
   tipoContrato int(11)default null,
   inicioContrato date,
   fimContrato date,
   primary key(id),
 
-  INDEX fk_funcionario_tipo_idx (idTipo ASC),
-  CONSTRAINT fk_funcionario_tipo FOREIGN KEY (idTipo)REFERENCES tipos (id)
+  INDEX fk_tipoFuncionarios_idx (idTipo ASC),
+  CONSTRAINT fk_tipoFuncionarios FOREIGN KEY (idTipo)REFERENCES tipoFuncionarios (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE,
   
@@ -184,8 +194,8 @@ create table fornecedor (
   nome nvarchar(50)not null,
   morada nvarchar(90) null,
   nif nvarchar(50) null,
-  telemovel nvarchar(11) null,
-  telefone nvarchar(11) null,
+  telemovel nvarchar(15) null,
+  telefone nvarchar(15) null,
   email nvarchar(50) null,
   descriFoto longtext,
   foto longblob,
@@ -264,8 +274,8 @@ create table endereco3(
 create table contacto1(
   id int not null auto_increment,
   idFuncionario int not null,
-  telemovel nvarchar(11) not null,
-  telefone nvarchar(11) not null,
+  telemovel nvarchar(15) not null,
+  telefone nvarchar(15) not null,
   email nvarchar(50) DEFAULT null,
   webpage nvarchar(50) DEFAULT null,
   PRIMARY KEY(id),
@@ -280,8 +290,8 @@ create table contacto1(
 create table contacto2(
   id int not null auto_increment,
   idFornecedor int not null,
-  telemovel nvarchar(11) not null,
-  telefone nvarchar(11) not null,
+  telemovel nvarchar(15) not null,
+  telefone nvarchar(15) not null,
   email nvarchar(50) DEFAULT null,
   webpage nvarchar(50) DEFAULT null,
   PRIMARY KEY(id),
@@ -296,8 +306,8 @@ create table contacto2(
 create table contacto3(
   id int not null auto_increment,
   idCliente int not null,
-  telemovel nvarchar(11) not null,
-  telefone nvarchar(11) not null,
+  telemovel nvarchar(15) not null,
+  telefone nvarchar(15) not null,
   email nvarchar(50) DEFAULT null,
   webpage nvarchar(50) DEFAULT null,
   PRIMARY KEY(id),
@@ -311,7 +321,7 @@ create table contacto3(
 
 create table familiaProduto(
   id int not null auto_increment,
-  idParente nvarchar(11) default null,
+  idParente nvarchar(50) default null,
   designacao nvarchar(50) not null,
   imagem longblob,
   primary key(id)
@@ -374,7 +384,7 @@ create table taxa(
 
 create table produtos(
   id int not null auto_increment,
-  codProduto nvarchar(30)default null,
+  codProduto nvarchar(11)default null,
   idFamilia int null,
   idTaxa int null,
   designacao nvarchar(50) not null,
@@ -394,7 +404,7 @@ create table produtos(
   idMarca int null,
   producao date,
   validade date,
-  codBarras nvarchar(50) default null,
+  codBarras nvarchar(50) null,
   primary key(id),
 
   INDEX fk_produtos_familia_idx (idFamilia ASC),
@@ -433,9 +443,9 @@ create table produtos(
 create table itensVendas(
   id int not null auto_increment,
   idProduto int(50)default null,
-  produtoServico nvarchar(50) not null,
+  produtoServico nvarchar(200) not null,
   armazem nvarchar(50)default 'Estoque',
-  Variante nvarchar(50) default null,
+  Variante nvarchar(50) null,
   um nvarchar(50) default null,
   qtde double default 1,
   preco decimal(10,2) default 0.00,
