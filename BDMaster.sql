@@ -100,9 +100,15 @@ create table formaPagamento(
 CREATE TABLE categoriaFun(
   id int not null auto_increment,
   designacao nvarchar(100) NOT NULL,
-  codigo nvarchar(50) DEFAULT NULL,
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO categoriaFun VALUES ("0","P.C.A");
+INSERT INTO categoriaFun VALUES ("0","Sec. Executiva");
+INSERT INTO categoriaFun VALUES ("0","Auxiliar Adm.");
+INSERT INTO categoriaFun VALUES ("0","Estágio Adm.");
+INSERT INTO categoriaFun VALUES ("0","Motorista Sénior");
+INSERT INTO categoriaFun VALUES ("0","Motorista");
+INSERT INTO categoriaFun VALUES ("0","Balconista");
 
 CREATE TABLE departamento(
   id int not null auto_increment,
@@ -145,10 +151,20 @@ create table funcionario(
   nome nvarchar(50) default null,
   idTipo int(11)default null,
   sexo enum('Masculino','Femenino'),
+  nif nvarchar(50) null,
+  niss nvarchar(50) null,
+  morada nvarchar(100)null,
+  endereco nvarchar(11)null,
+  localidade nvarchar(100) null,
+  provincia nvarchar (100) null,
+  pais nvarchar(100) null,
+  telemovel nvarchar(100) null,
+  telefone nvarchar(100) null,
+  email nvarchar(100) null,
+  webpag nvarchar(100) null,
   descriFoto longtext,
   foto longblob,
   idCategoriaFun int(11)default null,
-  idSubCategoria int(11)default null,
   idDepartamento  int(11)default null,
   tipoContrato int(11)default null,
   inicioContrato date,
@@ -188,7 +204,7 @@ create table vendedor(
   
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table fornecedor (
+create table fornecedor(
   id int(11)not null auto_increment,
   codigo nvarchar(11) not null,
   nome nvarchar(50)not null,
@@ -207,7 +223,7 @@ create table fornecedor (
 create table fabricante(
   id int not null auto_increment,
   codigo nvarchar(11) null,
-  designacao nvarchar(11)default null,
+  designacao nvarchar(50)default null,
   idNacionalidade int(50)default 0,
   descri nvarchar(100)default null,
   primary key(id),
@@ -369,10 +385,46 @@ create table modelo (
 
 create table unidade (
   id int not null auto_increment,
-  codigo nvarchar(11) default null,
-  designacao nvarchar(50)default null,
+  codigo nvarchar(11) not null,
+  designacao nvarchar(50)not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO unidade VALUES ("0","UN","Unidade");
+INSERT INTO unidade VALUES ("0","Kg","Quilos");
+INSERT INTO unidade VALUES ("0","g","Grama");
+INSERT INTO unidade VALUES ("0","SC60","Saca 60Kg");
+INSERT INTO unidade VALUES ("0","Hr","Hora");
+INSERT INTO unidade VALUES ("0","CX","Caixa");
+INSERT INTO unidade VALUES ("0","DZ","Dúzia");
+INSERT INTO unidade VALUES ("0","PT","Pacote");
+INSERT INTO unidade VALUES ("0","PÇ","Peça");
+INSERT INTO unidade VALUES ("0","PR","Par");
+INSERT INTO unidade VALUES ("0","RL","Rolo");
+INSERT INTO unidade VALUES ("0","L","Litro");
+INSERT INTO unidade VALUES ("0","m3","Metro cúbico");
+INSERT INTO unidade VALUES ("0","ml","Mililitro");
+INSERT INTO unidade VALUES ("0","RL","Rolo");
+INSERT INTO unidade VALUES ("0","m","Metro");
+INSERT INTO unidade VALUES ("0","m2","Metro quadrado");
+INSERT INTO unidade VALUES ("0","cm","Centímetro");
+INSERT INTO unidade VALUES ("0","cm2","Centímetro quadrado");
+INSERT INTO unidade VALUES ("0","cm","Centímetro");
+
+create table referencia(
+  id int not null auto_increment,
+  designacao nvarchar(50) not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO referencia VALUES ("0","Lobinave");
+INSERT INTO referencia VALUES ("0","Sul");
+INSERT INTO referencia VALUES ("0","Ponte");
+INSERT INTO referencia VALUES ("0","Canata");
+INSERT INTO referencia VALUES ("0","Sonangol");
+INSERT INTO referencia VALUES ("0","Cabaia1");
+INSERT INTO referencia VALUES ("0","Cabaia2");
+INSERT INTO referencia VALUES ("0","Cajendede");
+INSERT INTO referencia VALUES ("0","Cassai");
+INSERT INTO referencia VALUES ("0","Novo");
 
 create table taxa(
   id int not null auto_increment,
@@ -395,9 +447,10 @@ create table produtos(
   precoCompra2 decimal(10,2) default 0.00,
   precoVenda decimal(10,2) default 0.00,
   precoVenda2 decimal(10,2) default 0.00,
-  qtdade_stoke int default 1,
+  margemLucro decimal(10,2) default 0.00,
+  qtdade_stoke double default 1,
   idFabricante int null,
-  qtdadeMinima int default 10,
+  qtdadeMinima double default 10,
   idUnidade int null,
   idCategoria int null,
   idModelo int null,
@@ -438,6 +491,37 @@ create table produtos(
   ON UPDATE CASCADE 
 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table estoque(
+  id int not null auto_increment,
+  idFornecedor int not null,
+  idProduto int not null,
+  Item nvarchar(50)not null,
+  designacao nvarchar(50) not null,
+  precoCompra decimal(10,2) default 0.00,
+  precoCompra2 decimal(10,2) default 0.00,
+  precoVenda decimal(10,2) default 0.00,
+  precoVenda2 decimal(10,2) default 0.00,
+  margemLucro decimal(10,2) default 0.00,
+  qtdade_stoke double default 1,
+  unidade nvarchar(50) null,
+  qtdadeMinima double default 10,
+  codBarras nvarchar(50) null,
+  procedencia nvarchar(50) null,
+  primary key(id),
+
+  INDEX fk_estoque_fornecedor_idx (idFornecedor ASC),
+  INDEX fk_estoque_produtos_idx (idProduto ASC),
+
+  CONSTRAINT fk_estoque_fornecedor FOREIGN KEY (idFornecedor)REFERENCES fornecedor (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
+  CONSTRAINT fk_estoque_produtos FOREIGN KEY (idProduto)REFERENCES produtos (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 create table itensVendas(
@@ -586,3 +670,78 @@ create table controlFuncionario(
   ON DELETE NO ACTION
   ON UPDATE CASCADE
 )ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+
+create table abonosDescontos(
+  id int not null auto_increment,
+  ididOrcamento int not null,
+  designacao varchar(50) default null,
+  percentagem double null,
+  valor decimal(10,2) default 0.00,
+  periodo date,
+  descricao varchar(50) default null,
+
+  PRIMARY KEY(id),
+
+  INDEX fk_abonosDescontos_orcamentoGeral_idx (ididOrcamento ASC),
+  CONSTRAINT fk_abonosDescontos_orcamentoGeral FOREIGN KEY (ididOrcamento )REFERENCES orcamentoGeral (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+
+)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+
+
+create table contrato(
+  id int not null auto_increment,
+  idFunc int(11) not null,
+  codigoFunc nvarchar(50) null,
+  designacao varchar(50) null,
+  BI nvarchar(50) null,
+  NIF nvarchar(50) null,
+  NISS nvarchar(50) null,
+  tipoContrato nvarchar(11) null,
+  dataInicio date null,
+  dataFim date null,
+  descricao varchar(50) default null,
+  datacontrol datetime not null,
+  PRIMARY KEY(id),
+
+  INDEX fk_contrato_Funcionario_idx (idFunc ASC),
+  CONSTRAINT fk_contrato_Funcionario FOREIGN KEY (idFunc)REFERENCES funcionario (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+
+create table vecimento(
+   id int not null auto_increment,
+   idFunc int not null,
+   idDesconto int not null,
+   idsubcidios int not null,
+   idPeriodo int not null,
+   periodo nvarchar(50) null,
+   descriPeriodo nvarchar(50) null,
+   tipoProc nvarchar(50) null,
+   valorBase decimal(10,2) default 0.00,
+   valorPeriodo decimal(10,2) default 0.00,
+   quantidade double null,
+   moeda nvarchar(50) null,
+   total decimal(10,2) default 0.00,
+   dataProc date not null,
+      
+
+ PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table remuneração(
+ id int not null auto_increment,
+ idVeciment int not null,
+ codigo nvarchar(50) null,
+ descricao nvarchar(50) null,
+ periodo date, 
+ quantidade int null,
+ valorUnit decimal(10,2) default 0.00,
+ tipo nvarchar(50) null,
+ total decimal(10,2) default 0.00,
+
+PRIMARY KEY(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
