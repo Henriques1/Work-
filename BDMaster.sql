@@ -3,7 +3,15 @@ CREATE DATABASE bd
 Default character set utf8;
 USE bd;
 
-#Gestão de Stoque 
+
+###=============================================================================================================
+####Gestão de Stoque 
+###=============================================================================================================
+
+###=============================================================================================================
+####Add Register  
+###=============================================================================================================
+
 
 CREATE TABLE usuario(
    Codigo int(22) NOT NULL AUTO_INCREMENT,
@@ -36,25 +44,27 @@ CREATE TABLE EMPRESAS(
 
 create table tiposProduto(
   id int not null auto_increment,
-  designacao varchar(50) not null,
+  codigo nvarchar(50) null,
+  designacao nvarchar(50) not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO tiposProduto VALUES ("0","bens de consumo");
-INSERT INTO tiposProduto VALUES ("0","produtos industriais");
-INSERT INTO tiposProduto VALUES ("0","bens de conveniência");
-INSERT INTO tiposProduto VALUES ("0","bens de impulso");
-INSERT INTO tiposProduto VALUES ("0","bens de emergência");
-INSERT INTO tiposProduto VALUES ("0","bens de compra comparada");
-INSERT INTO tiposProduto VALUES ("0","bens de especialidade");
-INSERT INTO tiposProduto VALUES ("0","bens não procurados");
-INSERT INTO tiposProduto VALUES ("0","bens perecíveis");
-INSERT INTO tiposProduto VALUES ("0","bens duráveis");
-INSERT INTO tiposProduto VALUES ("0","bens não-duráveis");
-INSERT INTO tiposProduto VALUES ("0","bens de capital");
-INSERT INTO tiposProduto VALUES ("0","partes e materiais");
-INSERT INTO tiposProduto VALUES ("0","abastecimento e serviços");
-INSERT INTO tiposProduto VALUES ("0","commodities");
-INSERT INTO tiposProduto VALUES ("0","produtos intermediários");
+INSERT INTO tiposProduto VALUES ("0","T01","bens de consumo");
+INSERT INTO tiposProduto VALUES ("0","T02","produtos industriais");
+INSERT INTO tiposProduto VALUES ("0","T03","bens de conveniência");
+INSERT INTO tiposProduto VALUES ("0","T04","Mercadorias");
+INSERT INTO tiposProduto VALUES ("0","T05","bens de impulso");
+INSERT INTO tiposProduto VALUES ("0","T06","bens de emergência");
+INSERT INTO tiposProduto VALUES ("0","T07","bens de compra comparada");
+INSERT INTO tiposProduto VALUES ("0","T08","bens de especialidade");
+INSERT INTO tiposProduto VALUES ("0","T09","bens não procurados");
+INSERT INTO tiposProduto VALUES ("0","T010","bens perecíveis");
+INSERT INTO tiposProduto VALUES ("0","T011","bens duráveis");
+INSERT INTO tiposProduto VALUES ("0","T012","bens não-duráveis");
+INSERT INTO tiposProduto VALUES ("0","T013","bens de capital");
+INSERT INTO tiposProduto VALUES ("0","T014","partes e materiais");
+INSERT INTO tiposProduto VALUES ("0","T015","abastecimento e serviços");
+INSERT INTO tiposProduto VALUES ("0","T016","commodities");
+INSERT INTO tiposProduto VALUES ("0","T017","produtos intermediários");
 
 
 create table tipoEntidade(
@@ -75,6 +85,15 @@ INSERT INTO tipoFuncionarios VALUES ("0","Efectivo");
 INSERT INTO tipoFuncionarios VALUES ("0","Colaborador");
 INSERT INTO tipoFuncionarios VALUES ("0","Dependente");
 INSERT INTO tipoFuncionarios VALUES ("0","Independente");
+
+
+create table nacionalidadeFunc(
+  id int not null auto_increment,
+  designacao varchar(50) not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO nacionalidadeFunc VALUES ("0","Angolana");
+INSERT INTO nacionalidadeFunc VALUES ("0","Estrangeiro");
 
 create table nacionalidadeFabricante(
   id int not null auto_increment,
@@ -112,9 +131,13 @@ INSERT INTO categoriaFun VALUES ("0","Balconista");
 
 CREATE TABLE departamento(
   id int not null auto_increment,
-  Nome varchar(100) DEFAULT NULL,
+  designacao nvarchar(100) DEFAULT NULL,
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO departamento VALUES ("0","Administrativo");
+INSERT INTO departamento VALUES ("0","Financeiro");
+INSERT INTO departamento VALUES ("0","Recursos Humanos (RH)");
+INSERT INTO departamento VALUES ("0"," Comercial");
 
 create table cliente(
   id int(11) not null auto_increment, 
@@ -151,10 +174,15 @@ create table funcionario(
   nome nvarchar(50) default null,
   idTipo int(11)default null,
   sexo enum('Masculino','Femenino'),
-  nif nvarchar(50) null,
-  niss nvarchar(50) null,
-  morada nvarchar(100)null,
-  endereco nvarchar(11)null,
+  estadoSivil nvarchar(50) null,
+  nascimento date null,
+  emissao date null,
+  BI nvarchar(50) null,
+  validade date null,
+  idNacionalidade int(11) null,
+  pai nvarchar(50) null,
+  mae nvarchar(50) null,
+  morada nvarchar(100) null,
   localidade nvarchar(100) null,
   provincia nvarchar (100) null,
   pais nvarchar(100) null,
@@ -164,12 +192,15 @@ create table funcionario(
   webpag nvarchar(100) null,
   descriFoto longtext,
   foto longblob,
-  idCategoriaFun int(11)default null,
-  idDepartamento  int(11)default null,
-  tipoContrato int(11)default null,
-  inicioContrato date,
-  fimContrato date,
+  idCategoriaFun int(11) null,
+  idDepartamento  int(11) null,
+
   primary key(id),
+
+  INDEX fk_funcionario_Nacionalidade_idx (idNacionalidade ASC),
+  CONSTRAINT fk_funcionario_Nacionalidade FOREIGN KEY (idNacionalidade)REFERENCES nacionalidadeFunc (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
 
   INDEX fk_tipoFuncionarios_idx (idTipo ASC),
   CONSTRAINT fk_tipoFuncionarios FOREIGN KEY (idTipo)REFERENCES tipoFuncionarios (id)
@@ -426,63 +457,94 @@ INSERT INTO referencia VALUES ("0","Cajendede");
 INSERT INTO referencia VALUES ("0","Cassai");
 INSERT INTO referencia VALUES ("0","Novo");
 
+###=============================================================================================================
+### Product Tax
+###=============================================================================================================
+
 create table taxa(
   id int not null auto_increment,
+  tipoImposto nvarchar(50) not null,
+  codigoImposto nvarchar(50) not null,
   designacao nvarchar(50) not null,
   percentagem DECIMAL(10,2),
   valor decimal(10,2),
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+###=============================================================================================================
+### Start Add Product Purchase Business
+###=============================================================================================================
+
+
 create table produtos(
   id int not null auto_increment,
   codProduto nvarchar(11)default null,
-  idFamilia int null,
-  idTaxa int null,
   designacao nvarchar(50) not null,
+  idTipoProduto int null,
+  tipoProduto nvarchar(50) null,
+
+  idTaxa int null,
+  tipoImposto nvarchar(50) not null,
+  codigoImposto nvarchar(50) not null,
+  designacaoImp nvarchar(50) null,
+  percentagemImp DECIMAL(10,2) null,
+  valorImp decimal(10,2) null,
+  ivaDedutivel decimal(10,2) null,
+
+  precoVenda1 decimal(10,2) default 0.00,
+  precoVenda2 decimal(10,2) default 0.00,
+  precoVenda3 decimal(10,2) default 0.00,
+  precoVenda4 decimal(10,2) default 0.00,
+
+  margemLucro decimal(10,2) default 0.00,
+  
+  qtdadeStock double default 1,
+  qtdadeMinima double default 10,
+  idUnidade int null,
+  unidade nvarchar(50) null,
+
+  idCategoria int null,
+  categoria nvarchar(50) null,
+
+  idSubCategoria int null,
+  subCategoria nvarchar(50) null,
+
+  idModelo int null,
+  modelo nvarchar(50) null,
+  
+  idMarca int null,
+  marca nvarchar(50) null, 
+
   descricao nvarchar(50)default null,
   imageProduto longblob,
   descriImage longtext,
-  precoCompra decimal(10,2) default 0.00,
-  precoCompra2 decimal(10,2) default 0.00,
-  precoVenda decimal(10,2) default 0.00,
-  precoVenda2 decimal(10,2) default 0.00,
-  margemLucro decimal(10,2) default 0.00,
-  qtdade_stoke double default 1,
-  idFabricante int null,
-  qtdadeMinima double default 10,
-  idUnidade int null,
-  idCategoria int null,
-  idModelo int null,
-  idMarca int null,
+
   producao date,
   validade date,
   codBarras nvarchar(50) null,
   primary key(id),
 
-  INDEX fk_produtos_familia_idx (idFamilia ASC),
   INDEX fk_produtos_taxa_idx (idTaxa ASC),
-  INDEX fk_produtos_fabricante_idx (idFabricante ASC),
   INDEX fk_produtos_unidade_idx (idUnidade ASC),
   INDEX fk_produtos_categoria_idx (idCategoria ASC),
+  INDEX fk_produtos_SubCategoria_idx (idSubCategoria ASC),
   INDEX fk_produtos_modelo_idx (idModelo ASC),
   INDEX fk_produtos_marca_idx (idMarca ASC),
 
-  CONSTRAINT fk_produtos_famila FOREIGN KEY (idFamilia)REFERENCES familiaProduto (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
+  
   CONSTRAINT fk_produtos_taxa FOREIGN KEY (idTaxa)REFERENCES taxa (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE,
-  CONSTRAINT fk_produtos_fabricante FOREIGN KEY (idFabricante)REFERENCES fabricante (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
+ 
   CONSTRAINT fk_produtos_unidade FOREIGN KEY (idUnidade)REFERENCES unidade (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE, 
   CONSTRAINT fk_produtos_categoria FOREIGN KEY (idCategoria)REFERENCES categoria (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE, 
+  CONSTRAINT fk_produtos_SubCategoria FOREIGN KEY (idSubCategoria )REFERENCES subcategoria (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
   CONSTRAINT fk_produtos_modelo FOREIGN KEY (idModelo)REFERENCES modelo (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE, 
@@ -495,16 +557,21 @@ create table produtos(
 create table estoque(
   id int not null auto_increment,
   idFornecedor int not null,
+  idProcedencia int null,
   idProduto int not null,
   Item nvarchar(50)not null,
   designacao nvarchar(50) not null,
+
   precoCompra decimal(10,2) default 0.00,
   precoCompra2 decimal(10,2) default 0.00,
   precoVenda decimal(10,2) default 0.00,
   precoVenda2 decimal(10,2) default 0.00,
+
   margemLucro decimal(10,2) default 0.00,
+
+  Variante nvarchar(50) null,
   qtdade_stoke double default 1,
-  unidade nvarchar(50) null,
+  unidadeM nvarchar(50) null,
   qtdadeMinima double default 10,
   codBarras nvarchar(50) null,
   procedencia nvarchar(50) null,
@@ -522,8 +589,91 @@ create table estoque(
 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table itensCompra(
+  id int not null auto_increment,
+  idProduto int(50)default null,
+  produtoServico nvarchar(200) not null,
+  armazem nvarchar(50)default 'Estoque',
+  Variante nvarchar(50) null,
+  uM nvarchar(50) default null,
+  qtde double default 1,
+  preco decimal(10,2) default 0.00,
+  valorDesconto decimal(10,2) default 0.00,
+  valorTotal decimal(10,2) default 0.00,
+  prazoEntrega Datetime,
+  margemLucro decimal(10,2) default 0.00,
+  descricao nvarchar(50) default 0.00,
+  
+  primary key(id)
+
+  #INDEX fk_itensv_Venda_idx (idVenda ASC),
+
+  #CONSTRAINT fk_itensv_Venda FOREIGN KEY (idVenda)REFERENCES venda (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+create table orcamentoCompra(
+  id int not null auto_increment,
+  idItem int not null,
+  idVendedor int not null,
+  documento nvarchar(50) not null,
+  idFornecedor int not null,
+  nomeFornecedor nvarchar(50) not null,
+  emissao datetime not null,
+  vecimento datetime not null,
+
+  facturamento nvarchar(50) not null,
+
+  vendedor nvarchar(50) not null,
+  prazoEntrega datetime default null,
+  valorDesconto decimal(10,2) default 0.00,
+  referencia nvarchar(50) default null,
+  contactoCli nvarchar(50) default null,
+  historico nvarchar(50) default null,
+  primary key(id),
+  
+  INDEX fk_orcamentoGeral_itensVendas_idx (idItem ASC),
+  CONSTRAINT fk_orcamentoGeral_itensVendas FOREIGN KEY (idItem)REFERENCES itensCompra (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
+  INDEX fk_orcamentoGeral_Cliente_idx (idCliente ASC),
+  CONSTRAINT fk_orcamentoGeral_Cliente FOREIGN KEY (idCliente)REFERENCES fornecedor (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
+  INDEX fk_orcamentoGeral_vendedor_idx (idVendedor ASC),
+  CONSTRAINT fk_orcamentoGeral_vendedor FOREIGN KEY (idVendedor)REFERENCES vendedor(id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table parcelasCompra(
+  id int not null auto_increment,
+  idOrcamentoCompra int not null,
+  formaPagamento nvarchar(50) not null,
+  intervalo nvarchar(50) default '1ªParcela',
+  tipoPagamento nvarchar(50) default null,
+  JurosDiarios decimal(10,2) default 0.00,
+  numeroParcela int(11) default null,
+  dataVecimento datetime default null,
+  intervaloNum int(11) default null,
+  valorParcela decimal(10,2) default 0.00,
+  qtdeValorParcela decimal(10,2) default 0.00,
+  historico nvarchar(50) default null,
+  titulosPagar decimal(10,2) default 0.00,
+  primary key(id),
+
+  INDEX fk_parcelaComp_orcamentoCompra_idx (idOrcamentoCompra ASC),
+  CONSTRAINT fk_parcelaComp_idOrcamentoCompra FOREIGN KEY (idOrcamentoCompra)REFERENCES orcamentoCompra (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+###=============================================================================================================
+### Start Product sales business
+###=============================================================================================================
 create table itensVendas(
   id int not null auto_increment,
   idProduto int(50)default null,
@@ -548,7 +698,7 @@ create table itensVendas(
   #ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table orcamentoGeral(
+create table orcamentoVenda(
   id int not null auto_increment,
   idItem int not null,
   idVendedor int not null,
@@ -582,7 +732,7 @@ create table orcamentoGeral(
   ON DELETE NO ACTION
   ON UPDATE CASCADE
 
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table parcelasVendas(
   id int not null auto_increment,
@@ -597,14 +747,14 @@ create table parcelasVendas(
   valorParcela decimal(10,2) default 0.00,
   qtdeValorParcela decimal(10,2) default 0.00,
   historico nvarchar(50) default null,
-  titulosPagar decimal(10,2) default 0.00,
+  titulosReceber decimal(10,2) default 0.00,
   primary key(id),
 
-  INDEX fk_parcelav_orcamentoGeral_idx (idOrcamento ASC),
-  CONSTRAINT fk_parcelav_idOrcamento FOREIGN KEY (idOrcamento)REFERENCES orcamentoGeral (id)
+  INDEX fk_parcelaVenda_orcamentoVenda_idx (idOrcamentoVenda ASC),
+  CONSTRAINT fk_parcelaVenda_idOrcamentoVenda FOREIGN KEY (idOrcamentoVenda)REFERENCES orcamentoVenda (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 create table movimento(
@@ -638,7 +788,7 @@ create table movimento(
   CONSTRAINT fk_movimento_idTipoPagamento FOREIGN KEY (idTipoPagamento)REFERENCES tipoPagamento (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table BI(
   id int not null auto_increment,
@@ -654,22 +804,22 @@ create table BI(
   CONSTRAINT fk_BI_idFuncionario FOREIGN KEY (idFunc)REFERENCES funcionario (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB auto_increment=1 default CHARSET=utf8;
 
-create table controlFuncionario(
+create table assiduidade(
   id int not null auto_increment,
   idFunc int not null,
   designacao varchar(50) default null,
-  presenca int not null,
+  presenca tinyint(1) DEFAULT NULL,
   descricao varchar(50) default null,
-  datacontrol datetime not null,
+  datacontrol date,
   PRIMARY KEY(id),
 
-  INDEX fk_control_Funcionario_idx (idFunc ASC),
-  CONSTRAINT fk_control_Funcionario FOREIGN KEY (idFunc)REFERENCES funcionario (id)
+  INDEX fk_assiduidade_Funcionario_idx (idFunc ASC),
+  CONSTRAINT fk_assiduidade_Funcionario FOREIGN KEY (idFunc)REFERENCES funcionario (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table abonosDescontos(
   id int not null auto_increment,
@@ -687,48 +837,115 @@ create table abonosDescontos(
   ON DELETE NO ACTION
   ON UPDATE CASCADE
 
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table moeda(
+  id int not null auto_increment,
+  designacao nvarchar(100) DEFAULT NULL,
+  PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO moeda VALUES ("0","AKZ");
+INSERT INTO moeda VALUES ("0","USD");
+INSERT INTO moeda VALUES ("0","EURO");
+
+create table periodo(
+  codigo nvarchar(50) Null,
+  designacao nvarchar(100) DEFAULT NULL,
+  PRIMARY KEY (codigo)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO periodo VALUES ("P01","Período Mensal");
+INSERT INTO periodo VALUES ("P02","Período Semanal");
+INSERT INTO periodo VALUES ("P03","Período Diário");
+INSERT INTO periodo VALUES ("P04","Período Trimestral");
+INSERT INTO periodo VALUES ("P05","Período Simestral");
+INSERT INTO periodo VALUES ("P06","Período Anual");
+
+create table tipoProc(
+  id int not null auto_increment,
+  designacao nvarchar(100) DEFAULT NULL,
+  PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO tipoProc VALUES ("0","Vecimento");
+INSERT INTO tipoProc VALUES ("0","Vecimento/subsídios");
+INSERT INTO tipoProc VALUES ("0","subsídio de férias");
+INSERT INTO tipoProc VALUES ("0","Subsídio de Pré-Maternidade");
+INSERT INTO tipoProc VALUES ("0","Subsídio de Maternidade");
+INSERT INTO tipoProc VALUES ("0","Subsídio de Aleitamento");
+INSERT INTO tipoProc VALUES ("0","Subsídio por Morte");
+INSERT INTO tipoProc VALUES ("0","Subsídio de Funeral");
 
 create table contrato(
-  id int not null auto_increment,
+  id int(11)not null auto_increment,
   idFunc int(11) not null,
   codigoFunc nvarchar(50) null,
   designacao varchar(50) null,
-  BI nvarchar(50) null,
+  departamento int(11) null,
+  categoria int(11) null,
   NIF nvarchar(50) null,
   NISS nvarchar(50) null,
-  tipoContrato nvarchar(11) null,
+  tipoContrato int(11) null,
   dataInicio date null,
   dataFim date null,
-  descricao varchar(50) default null,
-  datacontrol datetime not null,
+  descricao varchar(50) null,
+  valorUnit decimal(10,2) default 0.00,
+  IRT int(11) not null,
+  seguracaSocil int(11) not null,
+  seguracaSocilP int(11) not null,
+
   PRIMARY KEY(id),
 
   INDEX fk_contrato_Funcionario_idx (idFunc ASC),
   CONSTRAINT fk_contrato_Funcionario FOREIGN KEY (idFunc)REFERENCES funcionario (id)
   ON DELETE NO ACTION
-  ON UPDATE CASCADE
-)ENGINE=InnoDB auto_increment=16 default CHARSET=utf8;
+  ON UPDATE CASCADE,
 
-create table vecimento(
+  INDEX fk_contrato_Departamento_idx (departamento ASC),
+  CONSTRAINT fk_contrato_Departamento FOREIGN KEY (departamento)REFERENCES departamento (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
+
+  INDEX fk_contrato_categoria_idx (categoria ASC),
+  CONSTRAINT fk_contrato_categoria FOREIGN KEY (categoria)REFERENCES categoriaFun (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE,
+
+  INDEX fk_contrato_tipoContrato_idx (tipoContrato ASC),
+  CONSTRAINT fk_contrato_tipoContrato FOREIGN KEY (tipoContrato)REFERENCES tipoFuncionarios (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table processamento(
    id int not null auto_increment,
    idFunc int not null,
-   idDesconto int not null,
-   idsubcidios int not null,
-   idPeriodo int not null,
+   codigoFunc nvarchar(50) null,
+   designacao varchar(50) null,
+   idDesconto int null,
+   idSubcidio int null,
+
    periodo nvarchar(50) null,
    descriPeriodo nvarchar(50) null,
+
    tipoProc nvarchar(50) null,
    valorBase decimal(10,2) default 0.00,
    valorPeriodo decimal(10,2) default 0.00,
+   descontoIRT decimal(10,2) default 0.00,
+   descontoSocial decimal(10,2) default 0.00,
    quantidade double null,
    moeda nvarchar(50) null,
+   totalDesconto decimal(10,2) default 0.00,
    total decimal(10,2) default 0.00,
    dataProc date not null,
-      
 
- PRIMARY KEY(id)
+  PRIMARY KEY(id),
+
+  INDEX fk_processamento_Funcionario_idx (idFunc ASC),
+  CONSTRAINT fk_processamento_Funcionario FOREIGN KEY (idFunc)REFERENCES funcionario (id)
+  ON DELETE NO ACTION
+  ON UPDATE CASCADE
+
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table remuneração(
