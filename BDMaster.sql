@@ -1,3 +1,12 @@
+#SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT;
+#SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS;
+#SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION;
+#SET NAMES utf8;
+#SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+#SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+#SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO';
+#SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0; 
+
 DROP DATABASE IF EXISTS bd;
 CREATE DATABASE bd
 Default character set utf8;
@@ -27,7 +36,7 @@ CREATE TABLE usuario(
 INSERT INTO `usuario` VALUES ('0','inf@master.com','Master','Admim','123456','online','',NULL);
 #
 #
-CREATE TABLE EMPRESAS(
+CREATE TABLE empresas(
     idEmp int NOT Null AUTO_INCREMENT,
     codigoEmp varchar(50) NOT Null,
     nomeEmp varchar(50)NOT Null,
@@ -51,7 +60,7 @@ create table tiposProduto(
 INSERT INTO tiposProduto VALUES ("0","T01","bens de consumo");
 INSERT INTO tiposProduto VALUES ("0","T02","produtos industriais");
 INSERT INTO tiposProduto VALUES ("0","T03","bens de conveniência");
-INSERT INTO tiposProduto VALUES ("0","T04","Mercadorias");
+INSERT INTO tiposProduto VALUES ("0","T04","Mercadoria");
 INSERT INTO tiposProduto VALUES ("0","T05","bens de impulso");
 INSERT INTO tiposProduto VALUES ("0","T06","bens de emergência");
 INSERT INTO tiposProduto VALUES ("0","T07","bens de compra comparada");
@@ -106,15 +115,34 @@ INSERT INTO nacionalidadeFabricante VALUES ("0","Estrangeiro");
 
 create table tipoPagamento(
   id int not null auto_increment,
+  codigo nvarchar(50) null,
   designacao nvarchar(256) not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO tipoPagamento VALUES ("0","AV","À Vista");
+INSERT INTO tipoPagamento VALUES ("0","AP","À Prazo");
+INSERT INTO tipoPagamento VALUES ("0","CH","Cheque");
+INSERT INTO tipoPagamento VALUES ("0","CC","Cartões de créditos");
+
 
 create table formaPagamento(
   id int not null auto_increment,
+  codigo nvarchar(50) null,
   designacao nvarchar(256) not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO formaPagamento VALUES ("0","CC","Cartão Crédito");
+INSERT INTO formaPagamento VALUES ("0","CD","Cartão Débito");
+INSERT INTO formaPagamento VALUES ("0","CH","Cheque Bancário");
+INSERT INTO formaPagamento VALUES ("0","CI","Crédito Documentário Internacional");
+INSERT INTO formaPagamento VALUES ("0","CO","Cheque ou Cartão Oferta");
+INSERT INTO formaPagamento VALUES ("0","CS","Compensação de Saldos em conta Corrente");
+INSERT INTO formaPagamento VALUES ("0","DE","Dinheiro Electrónico");
+INSERT INTO formaPagamento VALUES ("0","MB","Referências de Pagamento para Multicaixa");
+INSERT INTO formaPagamento VALUES ("0","NU","Numerário");
+INSERT INTO formaPagamento VALUES ("0","OU","Outros Meios Aqui não Assinalados");
+INSERT INTO formaPagamento VALUES ("0","PR","Permuta de  Bens");
+INSERT INTO formaPagamento VALUES ("0","TB","Transferência Bancária ou Débito Directo Autorizado");
 
 CREATE TABLE categoriaFun(
   id int not null auto_increment,
@@ -175,6 +203,7 @@ create table funcionario(
   idTipo int(11)default null,
   sexo enum('Masculino','Femenino'),
   estadoSivil nvarchar(50) null,
+  
   nascimento date null,
   emissao date null,
   BI nvarchar(50) null,
@@ -182,6 +211,7 @@ create table funcionario(
   idNacionalidade int(11) null,
   pai nvarchar(50) null,
   mae nvarchar(50) null,
+  
   morada nvarchar(100) null,
   localidade nvarchar(100) null,
   provincia nvarchar (100) null,
@@ -190,8 +220,8 @@ create table funcionario(
   telefone nvarchar(100) null,
   email nvarchar(100) null,
   webpag nvarchar(100) null,
-  descriFoto longtext,
-  foto longblob,
+  descriFoto longtext null,
+  foto longblob null,
   idCategoriaFun int(11) null,
   idDepartamento  int(11) null,
 
@@ -414,6 +444,71 @@ create table modelo (
   ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table estatuDocumento(
+  id int not null auto_increment,
+  codigo nvarchar(11) not null,
+  designacao nvarchar(300)not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO estatuDocumento VALUES ("0","N","Normal");
+INSERT INTO estatuDocumento VALUES ("0","T","Por conta de terceiros");
+INSERT INTO estatuDocumento VALUES ("0","A","Documento anulado");
+INSERT INTO estatuDocumento VALUES ("0","F","Documento facturado");
+INSERT INTO estatuDocumento VALUES ("0","PEN","Pendente");
+INSERT INTO estatuDocumento VALUES ("0","REC","Recebido");
+INSERT INTO estatuDocumento VALUES ("0","PAG","Pago");
+INSERT INTO estatuDocumento VALUES ("0","R","Documento de resumo doutros documentos...");
+
+
+create table tipoDocumentoC(
+  id int not null auto_increment,
+  codigo nvarchar(11) not null,
+  designacao nvarchar(50)not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO tipoDocumentoC VALUES ("0","FT","Factura");
+INSERT INTO tipoDocumentoC VALUES ("0","FR","Factura/Recibo");
+INSERT INTO tipoDocumentoC VALUES ("0","VD","Venda a Dinheiro");
+INSERT INTO tipoDocumentoC VALUES ("0","GF","Factura Genérica");
+INSERT INTO tipoDocumentoC VALUES ("0","FG","Factura Global");
+INSERT INTO tipoDocumentoC VALUES ("0","AC","Aviso de Cobrança");
+INSERT INTO tipoDocumentoC VALUES ("0","AR","Aviso de Cobrança/Recibo");
+INSERT INTO tipoDocumentoC VALUES ("0","RE","Recibo");
+INSERT INTO tipoDocumentoC VALUES ("0","ND","Nota de Débito");
+INSERT INTO tipoDocumentoC VALUES ("0","NC","Nota de Crédito");
+INSERT INTO tipoDocumentoC VALUES ("0","GR","Guia de Remessa");
+INSERT INTO tipoDocumentoC VALUES ("0","AF","Factura/Recibo (Autofacturação)");
+INSERT INTO tipoDocumentoC VALUES ("0","TV","Talão de Venda");
+INSERT INTO tipoDocumentoC VALUES ("0","TS","Talão de serviços prestados");
+INSERT INTO tipoDocumentoC VALUES ("0","TD","Talão de devolução");
+INSERT INTO tipoDocumentoC VALUES ("0","AA","Alienação de activos");
+INSERT INTO tipoDocumentoC VALUES ("0","DA","Devolução de activos");
+INSERT INTO tipoDocumentoC VALUES ("0","RP","Recibo de prémio");
+INSERT INTO tipoDocumentoC VALUES ("0","R","Recibo de estomo");
+
+
+
+create table tipoDocumentoF(
+  id int not null auto_increment,
+  codigo nvarchar(11) not null,
+  designacao nvarchar(50)not null,
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO tipoDocumentoF VALUES ("0","FT","Factura");
+INSERT INTO tipoDocumentoF VALUES ("0","FR","Factura/Recibo");
+INSERT INTO tipoDocumentoF VALUES ("0","VD","Venda a Dinheiro");
+INSERT INTO tipoDocumentoF VALUES ("0","GF","Factura Genérica");
+INSERT INTO tipoDocumentoF VALUES ("0","FG","Factura Global");
+INSERT INTO tipoDocumentoF VALUES ("0","AC","Aviso de Cobrança");
+INSERT INTO tipoDocumentoF VALUES ("0","AR","Aviso de Cobrança/Recibo");
+INSERT INTO tipoDocumentoF VALUES ("0","RE","Recibo");
+INSERT INTO tipoDocumentoF VALUES ("0","ND","Nota de Débito");
+INSERT INTO tipoDocumentoF VALUES ("0","NC","Nota de Crédito");
+INSERT INTO tipoDocumentoF VALUES ("0","GR","Guia de Remessa");
+INSERT INTO tipoDocumentoF VALUES ("0","AF","Factura/Recibo (Autofacturação)");
+INSERT INTO tipoDocumentoF VALUES ("0","TV","Talão de Venda");
+INSERT INTO tipoDocumentoF VALUES ("0","TS","Talão de Serviços Prestados");
+
 create table unidade (
   id int not null auto_increment,
   codigo nvarchar(11) not null,
@@ -423,7 +518,7 @@ create table unidade (
 INSERT INTO unidade VALUES ("0","UN","Unidade");
 INSERT INTO unidade VALUES ("0","Kg","Quilos");
 INSERT INTO unidade VALUES ("0","g","Grama");
-INSERT INTO unidade VALUES ("0","SC60","Saca 60Kg");
+INSERT INTO unidade VALUES ("0","SC60","Saco 60Kg");
 INSERT INTO unidade VALUES ("0","Hr","Hora");
 INSERT INTO unidade VALUES ("0","CX","Caixa");
 INSERT INTO unidade VALUES ("0","DZ","Dúzia");
@@ -443,19 +538,20 @@ INSERT INTO unidade VALUES ("0","cm","Centímetro");
 
 create table referencia(
   id int not null auto_increment,
+  codigo nvarchar(11) null,
   designacao nvarchar(50) not null,
   primary key(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO referencia VALUES ("0","Lobinave");
-INSERT INTO referencia VALUES ("0","Sul");
-INSERT INTO referencia VALUES ("0","Ponte");
-INSERT INTO referencia VALUES ("0","Canata");
-INSERT INTO referencia VALUES ("0","Sonangol");
-INSERT INTO referencia VALUES ("0","Cabaia1");
-INSERT INTO referencia VALUES ("0","Cabaia2");
-INSERT INTO referencia VALUES ("0","Cajendede");
-INSERT INTO referencia VALUES ("0","Cassai");
-INSERT INTO referencia VALUES ("0","Novo");
+INSERT INTO referencia VALUES ("0","LC","Local");
+INSERT INTO referencia VALUES ("0","LB","Lobinave");
+INSERT INTO referencia VALUES ("0","SL","Sul");
+INSERT INTO referencia VALUES ("0","PT","Ponte");
+INSERT INTO referencia VALUES ("0","CA","Canata");
+INSERT INTO referencia VALUES ("0","SN","Sonangol");
+INSERT INTO referencia VALUES ("0","CB1","Cabaia1");
+INSERT INTO referencia VALUES ("0","CB2","Cabaia2");
+INSERT INTO referencia VALUES ("0","CJ","Cajendede");
+INSERT INTO referencia VALUES ("0","CS","Cassai");
 
 ###=============================================================================================================
 ### Product Tax
@@ -477,41 +573,32 @@ create table taxa(
 
 
 create table produtos(
-  id int not null auto_increment,
-  codProduto nvarchar(11)default null,
+  id int(11)not null auto_increment,
+  codProduto nvarchar(11) not null,
   designacao nvarchar(50) not null,
   idTipoProduto int null,
   tipoProduto nvarchar(50) null,
 
   idTaxa int null,
-  tipoImposto nvarchar(50) not null,
-  codigoImposto nvarchar(50) not null,
+  tipoImposto nvarchar(50) null,
+  codigoImposto nvarchar(50) null,
   designacaoImp nvarchar(50) null,
-  percentagemImp DECIMAL(10,2) null,
-  valorImp decimal(10,2) null,
-  ivaDedutivel decimal(10,2) null,
+  percentagemImp decimal(10,2) default 0.00,
+  valorImp decimal(10,2) default 0.00,
+  ivaDedutivel decimal(10,2) default 0.00,
 
   precoVenda1 decimal(10,2) default 0.00,
   precoVenda2 decimal(10,2) default 0.00,
   precoVenda3 decimal(10,2) default 0.00,
   precoVenda4 decimal(10,2) default 0.00,
 
-  margemLucro decimal(10,2) default 0.00,
-  
-  qtdadeStock double default 1,
-  qtdadeMinima double default 10,
-  idUnidade int null,
-  unidade nvarchar(50) null,
-
   idCategoria int null,
   categoria nvarchar(50) null,
-
   idSubCategoria int null,
   subCategoria nvarchar(50) null,
 
   idModelo int null,
   modelo nvarchar(50) null,
-  
   idMarca int null,
   marca nvarchar(50) null, 
 
@@ -522,87 +609,137 @@ create table produtos(
   producao date,
   validade date,
   codBarras nvarchar(50) null,
-  primary key(id),
+  primary key(id)
 
-  INDEX fk_produtos_taxa_idx (idTaxa ASC),
-  INDEX fk_produtos_unidade_idx (idUnidade ASC),
-  INDEX fk_produtos_categoria_idx (idCategoria ASC),
-  INDEX fk_produtos_SubCategoria_idx (idSubCategoria ASC),
-  INDEX fk_produtos_modelo_idx (idModelo ASC),
-  INDEX fk_produtos_marca_idx (idMarca ASC),
+  #INDEX fk_produtos_taxa_idx (idTaxa ASC),
+  #INDEX fk_produtos_categoria_idx (idCategoria ASC),
+  #INDEX fk_produtos_SubCategoria_idx (idSubCategoria ASC),
+  #INDEX fk_produtos_modelo_idx (idModelo ASC),
+  #INDEX fk_produtos_marca_idx (idMarca ASC),
 
   
-  CONSTRAINT fk_produtos_taxa FOREIGN KEY (idTaxa)REFERENCES taxa (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
- 
-  CONSTRAINT fk_produtos_unidade FOREIGN KEY (idUnidade)REFERENCES unidade (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE, 
-  CONSTRAINT fk_produtos_categoria FOREIGN KEY (idCategoria)REFERENCES categoria (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE, 
-  CONSTRAINT fk_produtos_SubCategoria FOREIGN KEY (idSubCategoria )REFERENCES subcategoria (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  CONSTRAINT fk_produtos_modelo FOREIGN KEY (idModelo)REFERENCES modelo (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE, 
-  CONSTRAINT fk_produtos_marca FOREIGN KEY (idMarca)REFERENCES marca (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE 
+  #CONSTRAINT fk_produtos_taxa FOREIGN KEY (idTaxa)REFERENCES taxa (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE,
+  #CONSTRAINT fk_produtos_categoria FOREIGN KEY (idCategoria)REFERENCES categoria (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE, 
+  #CONSTRAINT fk_produtos_SubCategoria FOREIGN KEY (idSubCategoria )REFERENCES subcategoria (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE,
+  #CONSTRAINT fk_produtos_modelo FOREIGN KEY (idModelo)REFERENCES modelo (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE, 
+  #CONSTRAINT fk_produtos_marca FOREIGN KEY (idMarca)REFERENCES marca (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE 
 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table estoque(
   id int not null auto_increment,
   idFornecedor int not null,
-  idProcedencia int null,
+  fornecedor nvarchar(50) not null,
   idProduto int not null,
   Item nvarchar(50)not null,
   designacao nvarchar(50) not null,
+  designacaoEstoque nvarchar(50) null,
+  variante nvarchar(50) null,
 
-  precoCompra decimal(10,2) default 0.00,
-  precoCompra2 decimal(10,2) default 0.00,
-  precoVenda decimal(10,2) default 0.00,
+  precoVenda1 decimal(10,2) default 0.00,
   precoVenda2 decimal(10,2) default 0.00,
+  precoVenda3 decimal(10,2) default 0.00,
+  precoVenda4 decimal(10,2) default 0.00,
 
-  margemLucro decimal(10,2) default 0.00,
-
-  Variante nvarchar(50) null,
-  qtdade_stoke double default 1,
+  quantidade double default 1,
+  quantidadeMin double default 10,
   unidadeM nvarchar(50) null,
-  qtdadeMinima double default 10,
+
   codBarras nvarchar(50) null,
+
+  imposto nvarchar(50) null,
+  percentagemImposto decimal(10,2) default 0.00,
+  valorImposto decimal(10,2) default 0.00,
+
   procedencia nvarchar(50) null,
+  dataCompra date,
   primary key(id),
 
-  INDEX fk_estoque_fornecedor_idx (idFornecedor ASC),
-  INDEX fk_estoque_produtos_idx (idProduto ASC),
+  #INDEX fk_estoque_fornecedor_idx (idFornecedor ASC),
 
-  CONSTRAINT fk_estoque_fornecedor FOREIGN KEY (idFornecedor)REFERENCES fornecedor (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  CONSTRAINT fk_estoque_produtos FOREIGN KEY (idProduto)REFERENCES produtos (id)
+  #CONSTRAINT fk_estoque_fornecedor FOREIGN KEY (idFornecedor)REFERENCES fornecedor (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE,
+  INDEX fk_estoque_produtos_idx (idProduto ASC),
+  CONSTRAINT fk_estoque_produtos FOREIGN KEY (idProduto)REFERENCES produtos(id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table itensCompra(
+create table orcamentoCompra(
   id int not null auto_increment,
-  idProduto int(50)default null,
-  produtoServico nvarchar(200) not null,
-  armazem nvarchar(50)default 'Estoque',
-  Variante nvarchar(50) null,
-  uM nvarchar(50) default null,
-  qtde double default 1,
-  preco decimal(10,2) default 0.00,
-  valorDesconto decimal(10,2) default 0.00,
+  facturamento nvarchar(50) not null,
+
+  idVendedor int not null,
+  vendedor nvarchar(50) not null,
+
+  documento nvarchar(50) not null,
+  tipoDocumento nvarchar(50) not null,
+
+  idFornecedor int not null,
+  fornecedor nvarchar(50) not null,
+  emissao datetime not null,
+  vecimento datetime not null,
+  previsaoFactura datetime not null,
+  condPag nvarchar(11) null,
+  prazoEntrega nvarchar(50) default null,
+  periodo int null,
+
+
+  valorCompra decimal(10,2) default 0.00,
+  valorImposto decimal(10,2) default 0.00,
+  valorTributavel decimal(10,2) default 0.00,
+  totalDocumento decimal(10,2) default 0.00,
   valorTotal decimal(10,2) default 0.00,
-  prazoEntrega Datetime,
-  margemLucro decimal(10,2) default 0.00,
-  descricao nvarchar(50) default 0.00,
+  valorPagar decimal(10,2) default 0.00,
+  
+  moeda nvarchar(11) null,
+  estado nvarchar(11) null,
+  modo nvarchar(11) null,
+  historico nvarchar(50) default null,
+  primary key(id)
+  
+  #INDEX fk_orcamentoCompra_Fornecedor_idx (idFornecedor ASC),
+  #CONSTRAINT fk_orcamentoCompra_Fornecedor FOREIGN KEY (idFornecedor)REFERENCES fornecedor (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE,
+  #INDEX fk_orcamentoCompra_vendedor_idx (idVendedor ASC),
+  #CONSTRAINT fk_orcamentoCompra_vendedor FOREIGN KEY (idVendedor)REFERENCES vendedor(id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE
+
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table itemCompra(
+
+  id int not null auto_increment,
+  facturamento nvarchar(50) not null,
+  idProduto int not null,
+  Item nvarchar(50)not null,
+  designacao nvarchar(200) not null,
+  armazem nvarchar(50)default 'Estoque',
+  variante nvarchar(50) null,
+
+  quantidade double default 1,
+  unidadeM nvarchar(50) null,
+
+  precoUnitario decimal(10,2) default 0.00,
+  valorItem decimal(10,2) default 0.00,
+
+  valorDesconto decimal(10,2) default 0.00,
+
+  imposto decimal(10,2) default 0.00,
   
   primary key(id)
 
@@ -613,45 +750,10 @@ create table itensCompra(
   #ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-create table orcamentoCompra(
-  id int not null auto_increment,
-  idItem int not null,
-  idVendedor int not null,
-  documento nvarchar(50) not null,
-  idFornecedor int not null,
-  nomeFornecedor nvarchar(50) not null,
-  emissao datetime not null,
-  vecimento datetime not null,
-
-  facturamento nvarchar(50) not null,
-
-  vendedor nvarchar(50) not null,
-  prazoEntrega datetime default null,
-  valorDesconto decimal(10,2) default 0.00,
-  referencia nvarchar(50) default null,
-  contactoCli nvarchar(50) default null,
-  historico nvarchar(50) default null,
-  primary key(id),
-  
-  INDEX fk_orcamentoGeral_itensVendas_idx (idItem ASC),
-  CONSTRAINT fk_orcamentoGeral_itensVendas FOREIGN KEY (idItem)REFERENCES itensCompra (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  INDEX fk_orcamentoGeral_Cliente_idx (idCliente ASC),
-  CONSTRAINT fk_orcamentoGeral_Cliente FOREIGN KEY (idCliente)REFERENCES fornecedor (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  INDEX fk_orcamentoGeral_vendedor_idx (idVendedor ASC),
-  CONSTRAINT fk_orcamentoGeral_vendedor FOREIGN KEY (idVendedor)REFERENCES vendedor(id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE
-
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 create table parcelasCompra(
   id int not null auto_increment,
   idOrcamentoCompra int not null,
+  codigoDocumento nvarchar (50) not null,
   formaPagamento nvarchar(50) not null,
   intervalo nvarchar(50) default '1ªParcela',
   tipoPagamento nvarchar(50) default null,
@@ -674,20 +776,73 @@ create table parcelasCompra(
 ###=============================================================================================================
 ### Start Product sales business
 ###=============================================================================================================
+
+create table orcamentoVenda(
+  id int not null auto_increment,
+  facturamento nvarchar(50) not null,
+
+  idVendedor int not null,
+  vendedor nvarchar(50) not null,
+
+  documento nvarchar(50) not null,
+  tipoDocumento nvarchar(50) not null,
+
+  idCliente int not null,
+  cliente nvarchar(50) not null,
+  emissao datetime not null,
+  vecimento datetime not null,
+  previsaoFactura datetime not null,
+  condPag nvarchar(11) null,
+  prazoEntrega nvarchar(50) default null,
+  periodo int null,
+
+
+  valorVenda decimal(10,2) default 0.00,
+  valorImposto decimal(10,2) default 0.00,
+  valorTributavel decimal(10,2) default 0.00,
+  totalDocumento decimal(10,2) default 0.00,
+  valorTotal decimal(10,2) default 0.00,
+  valorReceber decimal(10,2) default 0.00,
+  
+  moeda nvarchar(11) null,
+  estado nvarchar(11) null,
+  modo nvarchar(11) null,
+  historico nvarchar(50) default null,
+  primary key(id)
+  
+  #INDEX fk_orcamentoGeral_itensVendas_idx (idItem ASC),
+  #CONSTRAINT fk_orcamentoGeral_itensVendas FOREIGN KEY (idItem)REFERENCES itensVendas (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE,
+  #INDEX fk_orcamentoGeral_Cliente_idx (idCliente ASC),
+  #CONSTRAINT fk_orcamentoGeral_Cliente FOREIGN KEY (idCliente)REFERENCES cliente (id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE,
+  #INDEX fk_orcamentoGeral_vendedor_idx (idVendedor ASC),
+  #CONSTRAINT fk_orcamentoGeral_vendedor FOREIGN KEY (idVendedor)REFERENCES vendedor(id)
+  #ON DELETE NO ACTION
+  #ON UPDATE CASCADE
+
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 create table itensVendas(
   id int not null auto_increment,
-  idProduto int(50)default null,
-  produtoServico nvarchar(200) not null,
+  facturamento nvarchar(50) not null,
+  idProduto int not null,
+  Item nvarchar(50)not null,
+  designacao nvarchar(200) not null,
   armazem nvarchar(50)default 'Estoque',
-  Variante nvarchar(50) null,
-  um nvarchar(50) default null,
-  qtde double default 1,
-  preco decimal(10,2) default 0.00,
+  variante nvarchar(50) null,
+
+  quantidade double default 1,
+  unidadeM nvarchar(50) null,
+
+  precoUnitario decimal(10,2) default 0.00,
+  valorItem decimal(10,2) default 0.00,
+
   valorDesconto decimal(10,2) default 0.00,
-  valorTotal decimal(10,2) default 0.00,
-  prazoEntrega Datetime,
-  margemLucro decimal(10,2) default 0.00,
-  descricao nvarchar(50) default 0.00,
+
+  imposto decimal(10,2) default 0.00,
   
   primary key(id)
 
@@ -698,45 +853,9 @@ create table itensVendas(
   #ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table orcamentoVenda(
-  id int not null auto_increment,
-  idItem int not null,
-  idVendedor int not null,
-  documento nvarchar(50) not null,
-  idCliente int not null,
-  nomeCliente nvarchar(50) not null,
-  clienteRelacionado nvarchar(50) default null,
-  emissao datetime not null,
-  vecimento datetime not null,
-  facturamento datetime not null,
-  aprovacaoCli nvarchar(50) not null,
-  hora datetime not null,
-  vendedor nvarchar(50) not null,
-  prazoEntrega datetime default null,
-  valorDesconto decimal(10,2) default 0.00,
-  referencia nvarchar(50) default null,
-  contactoCli nvarchar(50) default null,
-  historico nvarchar(50) default null,
-  primary key(id),
-  
-  INDEX fk_orcamentoGeral_itensVendas_idx (idItem ASC),
-  CONSTRAINT fk_orcamentoGeral_itensVendas FOREIGN KEY (idItem)REFERENCES itensVendas (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  INDEX fk_orcamentoGeral_Cliente_idx (idCliente ASC),
-  CONSTRAINT fk_orcamentoGeral_Cliente FOREIGN KEY (idCliente)REFERENCES cliente (id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE,
-  INDEX fk_orcamentoGeral_vendedor_idx (idVendedor ASC),
-  CONSTRAINT fk_orcamentoGeral_vendedor FOREIGN KEY (idVendedor)REFERENCES vendedor(id)
-  ON DELETE NO ACTION
-  ON UPDATE CASCADE
-
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 create table parcelasVendas(
   id int not null auto_increment,
-  idOrcamento int not null,
+  idOrcamentoVenda int not null,
   formaPagamento nvarchar(50) not null,
   intervalo nvarchar(50) default '1ªParcela',
   tipoPagamento nvarchar(50) default null,
@@ -823,7 +942,7 @@ create table assiduidade(
 
 create table abonosDescontos(
   id int not null auto_increment,
-  ididOrcamento int not null,
+  idOrcamentoVenda int not null,
   designacao varchar(50) default null,
   percentagem double null,
   valor decimal(10,2) default 0.00,
@@ -832,8 +951,8 @@ create table abonosDescontos(
 
   PRIMARY KEY(id),
 
-  INDEX fk_abonosDescontos_orcamentoGeral_idx (ididOrcamento ASC),
-  CONSTRAINT fk_abonosDescontos_orcamentoGeral FOREIGN KEY (ididOrcamento )REFERENCES orcamentoGeral (id)
+  INDEX fk_abonosDescontos_orcamentoVenda_idx (idOrcamentoVenda ASC),
+  CONSTRAINT fk_abonosDescontos_orcamentoVenda FOREIGN KEY (idOrcamentoVenda )REFERENCES orcamentoVenda (id)
   ON DELETE NO ACTION
   ON UPDATE CASCADE
 
@@ -841,12 +960,13 @@ create table abonosDescontos(
 
 create table moeda(
   id int not null auto_increment,
-  designacao nvarchar(100) DEFAULT NULL,
+  codigo nvarchar(50) null,
+  designacao nvarchar(50) DEFAULT NULL,
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO moeda VALUES ("0","AKZ");
-INSERT INTO moeda VALUES ("0","USD");
-INSERT INTO moeda VALUES ("0","EURO");
+INSERT INTO moeda VALUES ("0","AKZ","Kwanza(Angola)");
+INSERT INTO moeda VALUES ("0","USD","Dólar ($)");
+INSERT INTO moeda VALUES ("0","EURO","EURO (€)");
 
 create table periodo(
   codigo nvarchar(50) Null,
@@ -948,17 +1068,59 @@ create table processamento(
 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table remuneração(
+create table vecimento(
  id int not null auto_increment,
- idVeciment int not null,
- codigo nvarchar(50) null,
+ idProc int not null,
  descricao nvarchar(50) null,
- periodo date, 
- quantidade int null,
- valorUnit decimal(10,2) default 0.00,
  tipo nvarchar(50) null,
- total decimal(10,2) default 0.00,
+
+ idFunc int  null,
+ codigoFunc nvarchar(50) null,
+ designacao varchar(50) null,
+
+ periodo date,
+ dataProc date, 
+ 
+ quantidade int null,
+
+ valorUnit decimal(10,2) default 0.00,
+ descontoIRT decimal(10,2) default 0.00,
+ descontoSocial decimal(10,2) default 0.00,
+ totalDesconto decimal(10,2) default 0.00,
+ totalLiquido decimal(10,2) default 0.00,
+
+  valorPagar decimal(10,2) default 0.00,
+  
+  moeda nvarchar(11) null,
+  estado nvarchar(11) null,
+  modo nvarchar(11) null,
 
 PRIMARY KEY(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table conta(
+  id int not null auto_increment,
+  
+  dataMovimento dateTime,
+  movimento nvarchar(50)  null,
+  descricao nvarchar(50)  null,
+  
+  designacao nvarchar(50) null,
+  numero nvarchar(50)  null,
+  tipoConta nvarchar(50) null,
+  balcao nvarchar(50)  null,
+
+  saldo decimal(10,2),
+  limite decimal(10,2),
+  primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+#SET SQL_MODE=@OLD_SQL_MODE;
+#SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+#SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+#SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT;
+#SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS;
+#SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION;
+#SET SQL_NOTES=@OLD_SQL_NOTES; 
 
